@@ -13,6 +13,7 @@ Utilice el archivo `data.csv` para resolver las preguntas.
 """
 
 
+import csv
 def pregunta_01():
     """
     Retorne la suma de la segunda columna.
@@ -21,7 +22,12 @@ def pregunta_01():
     214
 
     """
-    return
+    with open("data.csv", "r") as f:
+        data = csv.reader(f, delimiter="\t")
+        suma = 0
+        for fila in data:
+            suma += int(fila[1])
+        return suma
 
 
 def pregunta_02():
@@ -39,7 +45,17 @@ def pregunta_02():
     ]
 
     """
-    return
+    grouped_data = {}
+    with open("data.csv", "r") as f:
+        data = csv.reader(f, delimiter="\t")
+
+        # agroupamos la cantidad de elementos en la primera columna
+
+        for fila in data:
+            grouped_data[fila[0]] = grouped_data.get(fila[0], 0) + 1
+
+    return sorted(grouped_data.items())
+
 
 
 def pregunta_03():
@@ -57,7 +73,13 @@ def pregunta_03():
     ]
 
     """
-    return
+    grouped_data = {}
+    with open("data.csv", "r") as f:
+        data = csv.reader(f, delimiter="\t")
+        # agroupamos la cantidad de elementos en la primera columna
+        for fila in data:
+            grouped_data[fila[0]] = grouped_data.get(fila[0], 0) + int(fila[1])
+    return sorted(grouped_data.items())
 
 
 def pregunta_04():
@@ -82,7 +104,15 @@ def pregunta_04():
     ]
 
     """
-    return
+    grouped_data = {}
+    with open("data.csv", "r") as f:
+        data = csv.reader(f, delimiter="\t")
+        for fila in data:
+            fecha = fila[2].split("-")
+
+            grouped_data[fecha[1]] = grouped_data.get(fecha[1], 0) + 1
+        
+    return sorted(grouped_data.items())
 
 
 def pregunta_05():
@@ -100,7 +130,22 @@ def pregunta_05():
     ]
 
     """
-    return
+    with open("data.csv", "r") as f:
+        data = csv.reader(f, delimiter="\t")
+        grupos = {}
+        for fila in data:
+            letra = fila[0]
+            valor = int(fila[1])
+            if letra not in grupos:
+                grupos[letra] = [valor]
+            else:
+                grupos[letra].append(valor)
+        resultado = []
+        for letra, valores in grupos.items():
+            maximo = max(valores)
+            minimo = min(valores)
+            resultado.append((letra, maximo, minimo))
+        return sorted(resultado)
 
 
 def pregunta_06():
@@ -125,7 +170,28 @@ def pregunta_06():
     ]
 
     """
-    return
+    data = open ("data.csv", "r").readlines () 
+    min_values = {}
+    max_values = {}
+
+    for line in data:
+        fields = line.replace("It", " ").split()
+        column = fields[4].split(",")
+        for item in column:
+            key, value = item.split(":")
+            value = int(value)
+            if key in min_values:
+                if min_values[key] > value:
+                    min_values[key] = value
+                elif max_values[key] < value:
+                    max_values[key] = value
+            else:
+                min_values[key] = value
+                max_values[key] = value
+
+    resultado = [(key, min_values[key], max_values[key]) for key in min_values]
+    resultado.sort()            
+    return resultado
 
 
 def pregunta_07():
@@ -149,7 +215,21 @@ def pregunta_07():
     ]
 
     """
-    return
+    data = open ("data.csv", "r").readlines () 
+    columna_uno = [line.split()[0] for line in data]
+    columna_dos = [int(line.split()[1]) for line in data]
+
+    valores_unicos = sorted(set(columna_dos))
+
+    respuesta = {valor: [] for valor in valores_unicos}
+
+    for i, valor in enumerate(columna_dos):
+        respuesta[valor].append(columna_uno[i])
+
+    resultado = list(respuesta.items())
+
+    return resultado
+
 
 
 def pregunta_08():
@@ -174,7 +254,21 @@ def pregunta_08():
     ]
 
     """
-    return
+
+    data = open ("data.csv", "r").readlines () 
+    columna_uno = [k[0][0] for k in data]
+    columna_dos = [int(k[2]) for k in data] 
+    valores_unicos_columna_dos = sorted(set(columna_dos))
+    result = []
+
+    for valor in valores_unicos_columna_dos:
+        letras_asociadas = sorted(list(set(columna_uno[i] for i, v in enumerate(columna_dos) if v == valor)))
+        result.append((valor, letras_asociadas))
+
+    result.sort()
+    return result
+
+
 
 
 def pregunta_09():
@@ -197,7 +291,26 @@ def pregunta_09():
     }
 
     """
-    return
+
+    respuesta = {}
+    data = open ("data.csv", "r").readlines ()
+    for line in data:
+        fields = line.replace("\t", " ").split()
+        columna_cinco_values = fields[4].split(",")
+
+        for element in columna_cinco_values:
+            clave, numero = element.split(":")
+            if clave not in respuesta:
+                respuesta[clave] = 1
+            else:
+                respuesta[clave] += 1
+
+    sorted_items = sorted(respuesta.items())
+    respuesta = dict(sorted_items)
+
+    return respuesta
+
+
 
 
 def pregunta_10():
@@ -218,7 +331,19 @@ def pregunta_10():
 
 
     """
-    return
+    data = open ("data.csv", "r").readlines ()
+    columna1 = []
+    columna2 = []
+    columna3 = []
+
+    for line in data:
+        fields = line.replace("\t", " ").split()
+        columna1.append(fields[0])
+        columna2.append(len(fields[3].split(",")))
+        columna3.append(len(fields[4].split(",")))
+
+    resultado = list(map(lambda x, y, z: (x, y, z), columna1, columna2, columna3))
+    return resultado
 
 
 def pregunta_11():
@@ -239,7 +364,30 @@ def pregunta_11():
 
 
     """
-    return
+    data = open ("data.csv", "r").readlines ()
+
+
+    def calcular_suma_columna2_por_letra_columna4(data):
+        suma_por_letra = {}
+
+        for linea in data:
+            campos = linea.replace("\t", " ").split()
+            columna3 = campos[3]
+            valor_columna2 = int(campos[1])
+
+            claves = columna3.split(",")
+
+            for clave in claves:
+                if clave in suma_por_letra:
+                    suma_por_letra[clave] += valor_columna2
+                else:
+                    suma_por_letra[clave] = valor_columna2
+
+        suma_por_letra = dict(sorted(suma_por_letra.items()))
+        return suma_por_letra
+
+    resultado = calcular_suma_columna2_por_letra_columna4(data)
+    return resultado
 
 
 def pregunta_12():
@@ -255,6 +403,23 @@ def pregunta_12():
         'D': 136,
         'E': 324
     }
-
     """
-    return
+    data = open ("data.csv", "r").readlines ()
+
+    columna1 = [k[0][0] for k in data]
+    unicos = list(set(columna1))
+    unicos.sort()
+    respuesta = dict.fromkeys(unicos, 0)
+    
+    for linea in data:
+        campos = linea.replace("\t", " ").split()
+        clave = campos[0]
+        valores = campos[4].split(",")
+        suma = 0
+        
+        for elemento in valores:
+            suma += int(elemento.split(":")[1])
+        
+        respuesta[clave] += suma
+    return respuesta
+
